@@ -1,0 +1,176 @@
+<ion-header>
+  <ion-toolbar>
+
+    <div class="header-label">
+      <ion-label (click)="setToDefault()" style="font-size: 0.9rem"> Set default value</ion-label>
+      <ion-label (click)="saveSettings()" style="font-size: 0.9rem">Save settings</ion-label>
+    </div>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="wrapper">
+    <!-- <div class="court">
+    <div></div>
+    <div></div>
+    <div></div> 
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div>{{this.submitForm.get('player2').value}} + {{this.player2}}</div>
+    <div></div>
+    <div></div>
+    <div>{{this.submitForm.get('player1').value}} + {{this.player1}}</div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+</div> -->
+    <form (ngSubmit)="onSubmit()" [formGroup]="submitForm">
+      <ion-segment padding>
+        <ion-segment-button checked="this.activetab" (ionSelect)="setSinglesorDoubles(1)">
+          <ion-label>SINGLES</ion-label>
+        </ion-segment-button>
+        <ion-segment-button (ionSelect)="setSinglesorDoubles(2)">
+          <ion-label>DOUBLES</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+
+      <div class="sides">
+        <div>LEFT</div>
+        <div>RIGHT</div>
+
+
+        
+      </div>
+
+     
+
+      <div class="player-info">
+          <div [ngStyle]="{'background': singlesordoubles == 2 ? '#ffffff' : 'repeating-linear-gradient(45deg, rgba(0,0,0,.18), rgba(0,0,0,.08) 10px, rgba(0,0,0,.08) 10px, rgba(0,0,0,.09) 20px)' }">
+          <div *ngIf="singlesordoubles == 2">
+            <ion-input formControlName="player3" type="text" placeholder="Player 3">
+            </ion-input>
+          </div>
+
+        </div>
+        <div>
+          <div>
+            <ion-item>
+              <ion-input formControlName="player2" type="text" placeholder="Player 2">
+              </ion-input>
+            </ion-item>
+          </div>
+          <div class="serve-info">
+
+            <div class="whiteshade" [ngStyle]="{'backgroundColor': serviceInfo.player2 == 'Serve' ? 'green' : '#d9d9d9' }"
+              (click)="serveorreceive('player2', 'serve')"> {{this.player2}}</div>
+
+          </div>
+        </div>
+        <div>
+          <div>
+              <ion-item>
+              <ion-input formControlName="player1" type="text" placeholder="Player 1">
+              </ion-input>
+            </ion-item>
+          </div>
+
+          <div class="serve-info">
+
+            <div class="whiteshade" [ngStyle]="{'backgroundColor': serviceInfo.player1 == 'Serve' ? '#809c13' : '#d9d9d9' }"
+              (click)="serveorreceive('player1', 'serve')"> {{this.player1}}</div>
+
+          </div>
+        </div>
+
+        <div [ngStyle]="{'background': singlesordoubles == 2 ? '#ffffff' : 'repeating-linear-gradient(45deg, rgba(0,0,0,.18), rgba(0,0,0,.08) 10px, rgba(0,0,0,.08) 10px, rgba(0,0,0,.09) 20px)' }">
+          <div *ngIf="singlesordoubles == 2">
+            <ion-input formControlName="player4" type="text" placeholder="Player 4">
+            </ion-input>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="pre-config-row">
+        <div>&nbsp;</div>
+        <div>Sets</div>
+        <div>&nbsp;</div>
+        <div>Game</div>
+        <div>&nbsp;</div>
+        <div>Deuce</div>
+
+      </div>
+
+      <div class="config-row">
+        <div>Points</div>
+        <div><input type="text" value="1" formControlName="noofsets" readonly (click)="showIncrementer('set')"
+            style="width:40px; height: 40px; border-radius: 2px; padding: 0.5rem; border: 1px solid grey; font-size: 1.2rem; text-align: center;">
+        </div>
+        <div>&nbsp;</div>
+        <div>
+          <input type="text" value="1" formControlName="gamepoint" readonly (click)="showIncrementer('game')"
+            style="width:40px; height: 40px; border-radius: 2px; padding: 0.5rem; border: 1px solid grey; font-size: 1.2rem; text-align: center;">
+
+        </div>
+
+        <div>&nbsp;</div>
+        <div>
+          <input type="text" value="1" formControlName="deucepoint" readonly (click)="showIncrementer('deuce')" style="width:40px; height: 40px; border-radius: 2px; padding: 0.5rem; border: 1px solid grey; 
+
+font-size: 1.2rem; text-align: center;" [ngStyle]="{'background-color': (isdeuce === 'off') ? '#ffffff' : '#72A4D2'}">
+
+        </div>
+
+
+      </div>
+
+      <ng-container *ngIf="showincrementer">
+        <div class="pop">
+          <div class="value-button" id="decrease" (click)="decreaseValue()" value="Decrease Value">-</div>
+          <input type="number" id="number" value="1" formControlName="dummy" />
+          <div class="value-button" id="increase" (click)="increaseValue()" value="Increase Value">+</div>
+          <a (click)="closepop()" class="close"></a>
+        </div>
+      </ng-container>
+
+      <br>
+
+      <div class="settings">
+        <div class="left">
+          No settings(deuce)?
+        </div>
+        <div class="right">
+          <ion-toggle color="medium" mode="ios" (ionChange)="onClick($event)"></ion-toggle>
+        </div>
+        <div class="bottom">
+          A game will be finished when a team first reaches the game point.
+        </div>
+      </div>
+
+      <ion-row center>
+        <ion-col text-center>
+          <ion-button expand="block" type="button" (click)="saveSettings()" routerDirection="forward">
+            Save
+          </ion-button>
+        </ion-col>
+      </ion-row>
+
+    </form>
+
+    {{ submitForm.value | json }}
+    {{ submitForm.valid }}
+
+  </div>
+</ion-content>

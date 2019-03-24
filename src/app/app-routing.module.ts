@@ -14,7 +14,10 @@ const routes: Routes = [
   {
     path: 'list',
     loadChildren: './list/list.module#ListPageModule'
-  }
+  },
+  { path: 'scoring-home', loadChildren: './pages/scoring-home/scoring-home.module#ScoringHomePageModule' },
+  { path: 'settings', loadChildren: './pages/admin/settings/settings.module#SettingsPageModule' },
+  { path: 'score-game', loadChildren: './pages/score-game/score-game.module#ScoreGamePageModule' }
 ];
 
 @NgModule({
