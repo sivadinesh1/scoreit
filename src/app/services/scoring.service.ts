@@ -15,6 +15,33 @@ import { BehaviorSubject, Observable, Subject } from 'rxjs';
 })
 export class ScoringService {
 
+  
+
+  public   GAMESTATS: IGameStats = {
+    matchid: '101',
+    teams: [{
+      'name': 'TeamA', 'sets_won': 0, 'player1': 'A1', 'player2': 'A2',  'starting_serve': '',
+      games: [{ 'game': 1, 'score': 0, 'score_details': [], 'set_over': 'N', 'result': '', 'serve_receive': '' },
+      ]
+    },
+    {
+      'name': 'TeamB', 'sets_won': 0, 'player1': 'B1', 'player2': 'B2',  'starting_serve': '',
+      games: [{ 'game': 1, 'score': 0, 'score_details': [], 'set_over': 'N', 'result': '', 'serve_receive': '' },
+      ]
+    },
+    ],
+
+    format: 1,
+    sets: 3,
+    deuce: 30,
+    game_point: 21,
+    current_set: 1,
+    winner: ''
+  };
+
+  public _gameconfig = new BehaviorSubject<IGameStats>(this.GAMESTATS);
+
+  gameData: any;
 
   authenticationState = new Subject();
 
@@ -22,24 +49,34 @@ export class ScoringService {
 
   tempuserauthenticated: any;
 
+
   constructor(private storage: Storage, private plt: Platform,
     private toastController: ToastController,
   ) {
 
     this.plt.ready().then(() => {
       console.log('when calling 1');
-      this.storage.set('SINGLES_DOUBLES', 1);
-      this.storage.set('SIDES', 'Left');
-      this.storage.set('NOOFSETS', 3);
-      this.storage.set('DUMMY', '');
-      this.storage.set('GAME_POINT', 21);
-      this.storage.set('DEUCE_POINT', 30);
-      this.storage.set('PLAYER1', 'Player1');
-      this.storage.set('PLAYER2', 'Player2');
-      this.storage.set('PLAYER3', 'Player3');
-      this.storage.set('PLAYER4', 'Player4');
-      this.storage.set('IS_DEUCE_RULE', true);
+     
     });
+  }
+
+
+  get gameconfig() {
+    console.log('when calling 1@@' + this._gameconfig);
+    return this._gameconfig.asObservable();
+  }
+
+
+  setgameconfig(val: IGameStats) {
+    this._gameconfig.next(val);
+  }
+
+  setGameData(val: object) {
+    this.gameData = val;
+  }
+
+  getGameData() {
+    return this.gameData;
   }
 
   getItems(key): Promise<string> {
@@ -47,37 +84,11 @@ export class ScoringService {
   }
 
 
-  async gameSettings(submitForm: FormGroup) {
-    await this.storage.set('SINGLES_DOUBLES', submitForm.value.singlesordoubles);
-    await this.storage.set('SIDES', submitForm.value.sides);
-    await this.storage.set('NOOFSETS', submitForm.value.noofsets);
-    await this.storage.set('DUMMY', submitForm.value.dummy);
-    await this.storage.set('GAME_POINT', submitForm.value.gamepoint);
-    await this.storage.set('DEUCE_POINT', submitForm.value.deucepoint);
-    await this.storage.set('PLAYER1', submitForm.value.player1);
-    await this.storage.set('PLAYER2', submitForm.value.player2);
-    await this.storage.set('PLAYER3', submitForm.value.player3);
-    await this.storage.set('PLAYER4', submitForm.value.player4);
-    await this.storage.set('IS_DEUCE_RULE', submitForm.value.isdeucerule);
 
-    console.log('inside login notify');
-  }
 
 
   async reset() {
-    await this.storage.remove('SINGLES_DOUBLES');
-    await this.storage.remove('SIDES');
-    await this.storage.remove('NOOFSETS');
-    await this.storage.remove('DUMMY');
-    await this.storage.remove('GAME_POINT');
-    await this.storage.remove('DEUCE_POINT');
-    await this.storage.remove('PLAYER1');
-    await this.storage.remove('PLAYER2');
-    await this.storage.remove('PLAYER3');
-    await this.storage.remove('PLAYER4');
-    await this.storage.remove('PLAYER4');
-    await this.storage.remove('IS_DEUCE_RULE');
-
+   
     this.authenticationState.next(false);
 
   }

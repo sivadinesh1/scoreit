@@ -1,8 +1,9 @@
-<ion-header>
+<!-- <ion-header>
   <ion-toolbar>
 
     <div class="header-label">
         <ion-label (click)="setToDefault()" style="font-size: 0.9rem"> &nbsp;</ion-label>
+        <ion-label (click)="presentResetConfirm()" [ngStyle]="{'color': (scoring === 'on') ? '#000000' : '#ddd'}" style="font-size: 0.9rem"> Reset</ion-label>
       <ion-label (click)="clickUndo()" [ngStyle]="{'color': (scoring === 'on') ? '#000000' : '#ddd'}" style="font-size: 0.9rem"> UNDO</ion-label>
       
       
@@ -10,47 +11,130 @@
     </div>
 
   </ion-toolbar>
-</ion-header>
+</ion-header> -->
 
-<ion-content padding>
+
+<ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+      <!-- <ion-title>
+        
+      </ion-title> -->
+      <div class="header-label">
+          <ion-label  style="font-size: 0.9rem; text-align: right"> Game {{this.gamestats?.current_set}} / {{this.gamestats?.sets}}&nbsp;&nbsp;&nbsp;</ion-label>
+          <ion-label (click)="presentResetConfirm()" [ngStyle]="{'color': (scoring === 'on') ? '#000000' : '#ddd'}" style="font-size: 0.9rem"> Reset</ion-label>
+        <ion-label (click)="clickUndo()" [ngStyle]="{'color': (scoring === 'on') ? '#000000' : '#ddd'}" style="font-size: 0.9rem"> UNDO</ion-label>
+        
+        
+        <ion-label (click)="settings()" ><ion-icon name="settings"></ion-icon></ion-label>
+      </div>
+    </ion-toolbar>
+  </ion-header>
+
+<ion-content >
   <div class="grid-wrapper">
+      
     <div class="court">
+    <div></div>
       <div></div>
       <div></div>
       <div></div>
       <div></div>
       <div></div>
       <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-    </div>
+      <div>
+       
+        <div *ngIf="(((this.tempLeft?.games[gamestats.current_set - 1].score)%2) !== 0  && this.tempLeft.games[this.gamestats.current_set - 1].serve_receive == 'Serve') ">
+            {{this.tempLeft?.player1}}
+          Serve
+        </div>
 
+        <div *ngIf="((this.tempRight?.games[gamestats.current_set - 1].score)%2) !== 0 && this.tempRight.games[this.gamestats.current_set - 1].serve_receive == 'Serve'">
+            {{this.tempLeft?.player1}}
+            Receive
+          </div>
 
+        </div>
+      <div></div>
+      <div></div>
+      <div>
+        
+          <div *ngIf="(((this.tempRight?.games[gamestats.current_set - 1].score)%2) === 0  && this.tempRight.games[this.gamestats.current_set - 1].serve_receive == 'Serve')">
+              {{this.tempRight?.player1}}
+              Serve
+            </div>
+          <div *ngIf="((this.tempLeft?.games[gamestats.current_set - 1].score)%2) === 0  && this.tempLeft.games[this.gamestats.current_set - 1].serve_receive == 'Serve'">
+              {{this.tempRight?.player1}}
+              Receive
+            </div>
+            
+        </div>
+      <div></div>
+      <div></div>
+      <div>
+        
+        <div *ngIf="(((this.tempLeft?.games[gamestats.current_set - 1].score)%2) === 0  && this.tempLeft.games[this.gamestats.current_set - 1].serve_receive == 'Serve')">
+            {{this.tempLeft?.player1}}
+          Serve
+        </div>
+        <div *ngIf="((this.tempRight?.games[gamestats.current_set - 1].score)%2) === 0  && this.tempRight.games[this.gamestats.current_set - 1].serve_receive == 'Serve'">
+            {{this.tempLeft?.player1}}
+            Receive
+          </div>
+        
+        </div>
+      <div>
+        
+          <div *ngIf="(((this.tempRight?.games[gamestats.current_set - 1].score)%2) !== 0  && this.tempRight.games[this.gamestats.current_set - 1].serve_receive == 'Serve')">
+              {{this.tempRight?.player1}}
+              Serve
+            </div>
+          <div *ngIf="((this.tempLeft?.games[gamestats.current_set - 1].score)%2) !== 0 && this.tempLeft.games[this.gamestats.current_set - 1].serve_receive == 'Serve'">
+              {{this.tempRight?.player1}}
+              Receive
+            </div>
+
+        
+      </div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div> 
+    </div> 
+
+<!-- {{this.gamestats | json}} -->
 
           <div class="result">
               <div class="team-left">
-                  <div class="team-names">
-                      {{this.tempLeft?.player1}} / {{this.tempLeft?.player2}} :
+
+                  <div class="team-names"  *ngIf="format === 2">
+                    <div class="box">
+                        {{this.tempLeft?.player1}} / {{this.tempLeft?.player2}} :
+                    </div>
+                    <div class="box">
+                        {{this.tempRight?.player1}} / {{this.tempRight?.player2}} :
+                    </div>
+                      
                   </div> 
+                  <div class="team-names"  *ngIf="format === 1">
+                      <div class="box">
+                          {{this.tempLeft?.player1}} :
+                      </div>
+                      <div class="box">
+                          {{this.tempRight?.player1}} :
+                      </div>
+                  </div> 
+
                   <div class="team-scores">
-                    <div *ngFor="let row of tempArray" class="score-scrol">
+                    <div *ngFor="let row of copyScoreArr" class="score-scrol">
                           <div class="scrol-block">
-                          <div *ngFor="let c of row" > 
-                              {{c }} 
+                          <div *ngFor="let c of row" class="box"> 
+                              {{ c }} 
                           </div> 
                       </div>
                      
@@ -58,32 +142,85 @@
       
                   </div>
               </div>
+              <div class="res-msg">{{gameresult}}</div>
+              <div>&nbsp;</div>
+              
             
           </div>
   
 
     <div class="scoring-layout">
       <div class="left">
-        <div class="head">
+        <div class="head" *ngIf="format === 2">
           <div class="side1">
             <div class="top">
               {{this.tempLeft?.player1}}
+            
             </div>
+            
             <div class="bottom">
-              bottom
+
+                <span *ngIf="doubles_start_settings === 'on'  &&  this.sidea === 'Serve'" (click)="chooseWhoServesLeftDoubles('odd')">
+                    <div [ngStyle]="{'background-color': (this.db_left_odd_serve_start) ? 'green' : 'grey' }" >
+                        SERVE
+                    </div>
+                </span>
+
+                <span *ngIf="doubles_start_settings === 'on'  &&  this.sideb === 'Serve'" >
+                    <div [ngStyle]="{'background-color': (this.db_left_odd_serve_start) ? 'green' : 'grey' }" >
+                        RECEIVE
+                    </div>
+                </span>
+
+              <span *ngIf="this.sidea_left_odd === 'Serve'">
+                  {{this.sidea_left_odd}}
+              </span>
+              
             </div>
           </div>
+
+          <!-- LO -->
           <div class="side2">
             <div class="top">
                 {{this.tempLeft?.player2}}
             </div>
             <div class="bottom">
-              bottom
+
+                <span *ngIf="doubles_start_settings === 'on'  &&  this.sidea === 'Serve'" (click)="chooseWhoServesLeftDoubles('even')">
+                 
+                    <div [ngStyle]="{'background-color': (this.db_left_even_serve_start) ? 'green' : 'grey' }" >
+                        SERVE
+                    </div>
+                </span>
+                <span *ngIf="doubles_start_settings === 'on'  &&  this.sideb === 'Serve'" >
+                    <div [ngStyle]="{'background-color': (this.db_left_odd_serve_start) ? 'green' : 'grey' }" >
+                        RECEIVE
+                    </div>
+                </span>
+
+                <span *ngIf="this.sidea_left_even === 'Serve'">
+                {{this.sidea_left_even}}
+            </span>
             </div>
           </div>
         </div>
+
+        <div class="head-singles" *ngIf="format === 1">
+            <div class="side">
+              <div class="top">
+            <span class="hr"> {{this.tempLeft?.player1}} </span>
+             <!-- <hr class="hr"> -->
+              </div>
+              <div class="bottom">
+                  {{this.tempLeft.games[gamestats.current_set - 1].serve_receive}}
+              </div>
+            </div>
+        
+          </div>
+
+
         <div class="body">
-            <div class="my-game-status">{{tempLeft?.game}}/{{gamestats?.sets}}</div>
+            <div class="my-game-status">{{this.tempLeft?.sets_won}}/{{gamestats?.sets}}</div>
             <div class='score'>{{this.tempLeft?.games[gamestats.current_set - 1].score}}</div>
           <div class='status'>{{leftmatchpoint}}</div>
 
@@ -92,37 +229,86 @@
         </div>
         <div class="base">
 
-          <div class="num-pad" (click)="addScoreleft()" [ngStyle]="{'display': (game === 'on') ? 'grid' : 'none'}">
+          <div class="num-pad" (click)="addScoreleft()" [ngStyle]="{'display': (game === 'on') ? 'grid' : 'none', 'background-color': 'rgb(4, 127, 241)' }">
             <span class="plus" >+</span>
           </div>
         </div>
       </div>
       <div class="right">
-        <div class="head">
+        <div class="head" *ngIf="format === 2">
           <div class="side1">
             <div class="top">
                 {{this.tempRight?.player1}}
             </div>
-            <div class="bottom">
-              bottom
+
+            <span *ngIf="doubles_start_settings === 'on' &&  this.sidea === 'Serve'" >
+                <div [ngStyle]="{'background-color': (this.db_right_odd_serve_start) ? 'green' : 'grey' }" >
+                    RECIEVE
+                </div>
+            </span>
+
+            <span *ngIf="doubles_start_settings === 'on'  &&  this.sideb === 'Serve'" (click)="chooseWhoServesRightDoubles('odd')">
+                <div [ngStyle]="{'background-color': (this.db_right_odd_serve_start) ? 'green' : 'grey' }" >
+                    SERVE
+                </div>
+            </span>
+
+            <div class="bottom" *ngIf="this.sideb_right_odd === 'Serve'">
+                {{this.sideb_right_odd}}
+            </div>
+            <div class="bottom" *ngIf="this.sideb_right_odd === 'Receive'">
+                {{this.sideb_right_odd}}
             </div>
           </div>
           <div class="side2">
             <div class="top">
                 {{this.tempRight?.player2}}
             </div>
-            <div class="bottom">
-              bottom
+
+            <span *ngIf="doubles_start_settings === 'on'  &&  this.sidea === 'Serve'" (click)="chooseWhoServesLeftDoubles('odd')">
+                <div [ngStyle]="{'background-color': (this.db_right_even_serve_start) ? 'green' : 'grey' }" >
+                    RECEIVE
+                </div>
+            </span>
+
+
+            <span *ngIf="doubles_start_settings === 'on'  &&  this.sideb === 'Serve'" (click)="chooseWhoServesRightDoubles('odd')">
+                <div [ngStyle]="{'background-color': (this.db_right_even_serve_start) ? 'green' : 'grey' }" >
+                    SERVE
+                </div>
+            </span>
+
+
+            <div class="bottom" *ngIf="this.sideb_right_even === 'Serve'">
+                {{this.sideb_right_even}}
+            </div>
+            <div class="bottom" *ngIf="this.sideb_right_even === 'Receive'">
+                {{this.sideb_right_even}}
             </div>
           </div>
         </div>
+
+        <div class="head-singles" *ngIf="format === 1">
+            <div class="side">
+              <div class="top">
+                  <span class="hr">
+               {{this.tempRight?.player1}}</span>
+              </div>
+              <div class="bottom">
+                  {{this.tempRight.games[gamestats.current_set - 1].serve_receive}}
+              </div>
+            </div>
+        
+          </div>
+
+
         <div class="body">
-            <div class="my-game-status">{{tempRight?.game}}/{{gamestats?.sets}}</div>
+            <div class="my-game-status">{{this.tempRight?.sets_won}}/{{gamestats?.sets}}</div>
             <div class='score'>{{this.tempRight?.games[gamestats.current_set - 1].score}}</div>
             <div class='status'>{{rightmatchpoint}}</div>
         </div>
         <div class="base">
-          <div class="num-pad" (click)="addScoreRight()" [ngStyle]="{'display': (game === 'on') ? 'grid' : 'none'}">
+          <div class="num-pad" (click)="addScoreRight()" [ngStyle]="{'display': (game === 'on') ? 'grid' : 'none', 'background-color': '#ff5252' }">
             <span class="plus" >+</span>
           </div>
         </div>
@@ -131,8 +317,8 @@
           Done
         </div>
 
-        
-
+<!--         
+{{gamestats | json}} -->
 
     </div>
     

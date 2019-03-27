@@ -3,8 +3,8 @@ import { MatchOverComponent } from './../../components/match-over/match-over.com
 import { ScoringService } from './../../services/scoring.service';
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { FormGroup, Validators, FormControl, FormBuilder } from '@angular/forms';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
-import { ModalController } from '@ionic/angular';
+
+import { ModalController, AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 
 @Component({
@@ -15,25 +15,18 @@ import { Router } from '@angular/router';
 })
 export class ScoreGamePage implements OnInit {
 
-  activetab = true;
-
-
   submitForm: FormGroup;
   showincrementer = false;
-  serviceInfo: IActivity;
-
-
 
   gamepoint: any;
 
-
-right_score = 0;
-left_score = 0;
+  right_score = 0;
+  left_score = 0;
 
   gameresult: string;
-  noofsets: string;
+  noofsets: number;
 
-  format: string;
+
   deuce_point: number;
 
   leftmatchpoint: string;
@@ -43,8 +36,6 @@ left_score = 0;
 
 
 
-  right_game_won = 0;
-  left_game_won = 0;
 
   game = 'on';
   done = 'off';
@@ -63,139 +54,164 @@ left_score = 0;
   tempLeft: any;
   tempRight: any;
 
-  tempLeftScores: number[] = [];
-  tempRightScores: number[] = [];
-
-  scores_A: number[] = [0];
-  scores_B: number[] = [0];
-
-  testa: any;
-
-  //  itemstest = [
-  //   [1, 2],
-  //   [3, 4],
-  //   [5, 6]
-  // ];
+  team0: any;
+  combined_score_Arr = [[0, 0]];
 
 
-  itemstest = [
-    [0, 0],
-   
-  ];
+  copyScoreArr = [[0, 0]];
+  gamestats: IGameStats;
 
-dummy: any;
-tempArray: any;
+  format: number;
 
-  gamestats: IGameStats = {
-    matchid: '101',
-    teams: [{ 'name': 'TeamA', 'game' : 0, 'player1': 'A1', 'player2': 'A2', 'initial_side': 'left',
-            games: [{ 'game': 1, 'score': 0, 'score_details': [], 'over': 'N', 'result': ''},
+  sidea: any;
+  sideb: any;
 
-            ] },
-            { 'name': 'TeamB', 'game' : 0, 'player1': 'B1', 'player2': 'B2', 'initial_side': 'right',
-            games: [{ 'game': 1, 'score': 0, 'score_details': [], 'over': 'N', 'result': '' },
+  sidea_left_odd: any;
+  sidea_left_even: any;
 
-            ] },
-    ],
+  sideb_right_odd: any;
+  sideb_right_even: any;
 
-    format: 1,
-    sets: 3,
-    current_set: 1,
-    winner: ''
-  };
+  doubles_start_settings = 'on';
+  db_left_odd_serve_start = true;
+  db_left_even_serve_start =  false;
 
+  db_right_odd_serve_start = true;
+  db_right_even_serve_start = false;
 
+  // gamestats: IGameStats = {
+  //   matchid: '101',
+  //   teams: [{
+  //     'name': 'TeamA', 'sets_won': 0, 'player1': 'A1', 'player2': 'A2',  'starting_serve' : '',
+  //     games: [{ 'game': 1, 'score': 0, 'score_details': [], 'over': 'N', 'result': '' },
+  //     ]
+  //   },
+  //   {
+  //     'name': 'TeamB', 'sets_won': 0, 'player1': 'B1', 'player2': 'B2',  'starting_serve' : '',
+  //     games: [{ 'game': 1, 'score': 0, 'score_details': [], 'over': 'N', 'result': '' },
+  //     ]
+  //   },
+  //   ],
 
- 
+  //   format: 1,
+  //   sets: 3,
+  //   deuce: 30,
+  //   game_point: 21,
+  //   current_set: 1,
+  //   winner: ''
+  // };
 
   constructor(private _fb: FormBuilder, private _scoringService: ScoringService,
     private _modalcontroller: ModalController, private _router: Router,
+    private alertController: AlertController,
     private _cdr: ChangeDetectorRef) {
-
     this.gamenumber = 1;
-
-
   }
 
   ngOnInit() {
-    this.submitForm = this._fb.group({
-      'leftside': new FormControl('', Validators.required),
-      'rightside': new FormControl('', Validators.required),
-    });
+    //debugger;
+   // this.gamestats = this._scoringService.getGameData();
+
+   
+
+   
 
     this.getAsyncData();
+  }
+
+  ionViewDidEnter() {
+
+
+  //  console.table(this.gamestats);
+   
+
+   this.copyScoreArr = [[0, 0]];
+   this.combined_score_Arr = [[0, 0]];
+
+
+   this._cdr.markForCheck();
 
 
   }
 
   async getAsyncData() {
-    this.format = await this._scoringService.getItems('SINGLES_DOUBLES');
-    this.sides = await this._scoringService.getItems('SIDES');
-    this.noofsets = await this._scoringService.getItems('NOOFSETS');
-    this.gamepoint = await this._scoringService.getItems('GAME_POINT');
-    this.deuce_point = parseInt(<string>await this._scoringService.getItems('DEUCE_POINT'), 0);
+    this._scoringService.gameconfig.subscribe(res => {
+      this.gamestats = res;
+// debugger;
+      this.gamepoint = this.gamestats.game_point;
+    this.noofsets = this.gamestats.sets;
+    this.deuce_point = this.gamestats.deuce;
+   
+    this.format = this.gamestats.format;
 
-    this.player1 = await this._scoringService.getItems('PLAYER1');
-    this.player2 = await this._scoringService.getItems('PLAYER2');
-    this.player3 = await this._scoringService.getItems('PLAYER3');
-    this.player4 = await this._scoringService.getItems('PLAYER4');
-
-
-
-if(this.gamestats.teams[0].initial_side === 'left') {
-  this.tempLeft = this.gamestats.teams[0];
-  this.tempRight = this.gamestats.teams[1];
-} else if(this.gamestats.teams[0].initial_side === 'right') {
-  this.tempLeft = this.gamestats.teams[1];
-  this.tempRight = this.gamestats.teams[0];
-}
+this.tempLeft = this.gamestats.teams[0];
+this.tempRight = this.gamestats.teams[1];
 
 
+      this._cdr.markForCheck();
+    });
 
-
-
+    
 
     this._cdr.markForCheck();
-    console.log('object >>>> ' + this.gamepoint);
+
   }
 
 
   addScoreRight() {
-// debugger;
     this.scoring = 'on';
-    this.tempRightScores = [];
-   
+
+    this.doubles_start_settings =  'off';
+
     this.right_score = this.tempRight.games[this.gamestats.current_set - 1].score + 1;
-    this.left_score =  this.tempLeft.games[this.gamestats.current_set - 1].score;
- 
-     this.tempRight.games[this.gamestats.current_set - 1].score = this.right_score;
-     this.tempRight.games[this.gamestats.current_set - 1].score_details.push(this.right_score);
-     this.tempLeft.games[this.gamestats.current_set - 1].score_details.push(0);
 
-     this.tempRightScores = this.tempRight.games[this.gamestats.current_set - 1].score_details.reverse();
-     this.tempLeftScores = this.tempLeft.games[this.gamestats.current_set - 1].score_details.reverse();
+    this.left_score = this.tempLeft.games[this.gamestats.current_set - 1].score;
 
-     this.itemstest.push(new Array(this.left_score, this.right_score));
-
-    this._cdr.markForCheck();
 
     if (this.right_score === this.deuce_point) {
+
+
+      this.gameresult = `${this.tempRight.name} won the game`;
+
+      this.rightmatchpoint = 'Game';
+
+      this.game = 'off';
+      this.done = 'on';
+
+      this.scoring = 'off';
+
+      this.who_won = 'right';
 
       this._cdr.markForCheck();
 
     } else {
 
-      if (this.right_score === this.left_score) {
+   if (this.right_score === this.left_score) {
         this.rightmatchpoint = '';
         this.leftmatchpoint = '';
         this._cdr.markForCheck();
       } else if (this.right_score > this.left_score) {
+
+        if (this.right_score === (this.gamepoint - 1)) {
+          this.rightmatchpoint = 'Game Point';
+        }
+
         if (this.right_score >= this.gamepoint) {
 
           if ((this.right_score - 1) === this.left_score) {
             this.rightmatchpoint = 'Game Point';
           } else if ((this.right_score - 1) > this.left_score) {
-           
+            this.gameresult = `${this.tempRight.name} won the game`;
+
+            this.rightmatchpoint = 'Game';
+
+            this.game = 'off';
+            this.done = 'on';
+
+            this.scoring = 'off';
+
+            this.who_won = 'right';
+
             this._cdr.markForCheck();
           }
 
@@ -203,148 +219,397 @@ if(this.gamestats.teams[0].initial_side === 'left') {
       }
     }
 
+
+
+
+    this.tempRight.games[this.gamestats.current_set - 1].score = this.right_score;
+
+    this.tempRight.games[this.gamestats.current_set - 1].score_details.push(this.right_score);
+    this.tempLeft.games[this.gamestats.current_set - 1].score_details.push(this.left_score);
+
+
+
+    this.combined_score_Arr.push(new Array(this.left_score, this.right_score));
+
+    this.copyScoreArr = [...this.combined_score_Arr];
+
+    this.copyScoreArr = this.copyScoreArr.reverse();
+
+    if(this.sideb === 'Receive') {
+      this.sideb = 'Serve';
+      this.sidea = 'Receive';
+    }
+
+    if (this.sideb === 'Serve') {
+      if ((this.right_score % 2) !== 0) {
+        this.sidea_left_odd = 'Receive';
+        this.sidea_left_even = '';
+
+        this.sideb_right_odd = 'Serve';
+        this.sideb_right_even = '';
+
+      } else {
+        this.sidea_left_odd = '';
+        this.sidea_left_even = 'Receive';
+
+        this.sideb_right_even = 'Serve';
+        this.sideb_right_odd = '';
+        
+      }
+    }
+   // this.servechange();
+
+   this.tempLeft.games[this.gamestats.current_set - 1].serve_receive = 'Receive';
+    this.tempRight.games[this.gamestats.current_set - 1].serve_receive = 'Serve';
+
     this._cdr.markForCheck();
   }
 
-test() {
-  console.log('object test .. ');
 
-}
-
- reverseArray(arr) {
- //  debugger;
-  var newArray = [];
-  for (var i = arr.length - 1; i >= 0; i--) {
-    newArray.push(arr[i]);
-  }
-  return newArray;
-}
   addScoreleft() {
-    
- //debugger;
-
     this.scoring = 'on';
-    this.tempLeftScores = [];
    
-   this.left_score = this.tempLeft.games[this.gamestats.current_set - 1].score + 1;
-   this.right_score =  this.tempRight.games[this.gamestats.current_set - 1].score;
+    this.doubles_start_settings =  'off';
+    this.left_score = this.tempLeft.games[this.gamestats.current_set - 1].score + 1;
+
+    this.right_score = this.tempRight.games[this.gamestats.current_set - 1].score;
+
+    if (this.left_score === this.deuce_point) {
+      this.gameresult = `${this.tempLeft.name} won the game`;
+
+      this.leftmatchpoint = 'Game';
+
+      this.game = 'off';
+      this.done = 'on';
+
+      this.scoring = 'off';
+
+      this.who_won = 'left';
+
+      this._cdr.markForCheck();
+
+    } else {
+     if (this.left_score === this.right_score) {
+        this.rightmatchpoint = '';
+        this.leftmatchpoint = '';
+        this._cdr.markForCheck();
+      } else if (this.left_score > this.right_score) {
+
+        if (this.left_score === (this.gamepoint - 1)) {
+          this.leftmatchpoint = 'Game Point';
+        }
+        if (this.left_score >= this.gamepoint) {
+
+          if ((this.left_score - 1) === this.right_score) {
+            this.leftmatchpoint = 'Game Point';
+          } else if ((this.left_score - 1) > this.right_score) {
+            this.gameresult = `${this.tempLeft.name} won the game`;
+
+            this.leftmatchpoint = 'Game';
+
+            this.game = 'off';
+            this.done = 'on';
+
+            this.scoring = 'off';
+
+            this.who_won = 'left';
+
+            this._cdr.markForCheck();
+
+          }
+
+        }
+      }
+    }
 
     this.tempLeft.games[this.gamestats.current_set - 1].score = this.left_score;
+
     this.tempLeft.games[this.gamestats.current_set - 1].score_details.push(this.left_score);
-    this.tempRight.games[this.gamestats.current_set - 1].score_details.push(0);
-// debugger;
-    this.tempLeftScores = this.tempLeft.games[this.gamestats.current_set - 1].score_details.reverse();
-    this.tempRightScores = this.tempRight.games[this.gamestats.current_set - 1].score_details.reverse();
+    this.tempRight.games[this.gamestats.current_set - 1].score_details.push(this.right_score);
+
+
+    this.tempLeft.games[this.gamestats.current_set - 1].serve_receive = 'Serve';
+    this.tempRight.games[this.gamestats.current_set - 1].serve_receive = 'Receive';
+
+
+    this.combined_score_Arr.push(new Array(this.left_score, this.right_score));
+
+    this.copyScoreArr = [...this.combined_score_Arr];
+
+    this.copyScoreArr = this.copyScoreArr.reverse();
+
+    if (this.gamestats.format === 1) {
+      if (this.sidea === 'Receive') {
+        this.sidea = 'Serve';
+        this.sideb = 'Receive';
+      }
+    }
+
+    if (this.gamestats.format === 2) {
+      if (this.sidea === 'Receive') {
+        this.sidea = 'Serve';
+        this.sideb = 'Receive';
+      }
+
+     
+
+      if (this.sidea === 'Serve') {
+
+
+
+        if(this.doubles_start_settings === 'on') {
+          this.sidea_left_odd = 'Serve';
+          this.sidea_left_even = 'Serve';
+        }
+
+
+        if ((this.left_score % 2) !== 0) {
+          this.sidea_left_odd = 'Serve';
+          this.sidea_left_even = '';
+
+          this.sideb_right_odd = 'Receive';
+          this.sideb_right_even = '';
+
+        } else {
+          this.sidea_left_odd = '';
+          this.sidea_left_even = 'Serve';
+
+          this.sideb_right_even = 'Receive';
+          this.sideb_right_odd = '';
+          
+        }
+      }
+
+    }
     
-    
-     this.itemstest.push(new Array(this.left_score, this.right_score));
-// console.log('object...' + JSON.stringify(this.itemstest));
-
-    //  this.itemstest = this.reverseArray(this.itemstest);
-    //  console.log('object..af.' + JSON.stringify(this.itemstest));
-     this.tempArray = [...this.itemstest];
-
-    this.tempArray = this.tempArray.reverse();
-
-//console.log('objectmmm ' + this.tempArray);
-    
-
-   // console.log('object reverse ' +  tempArray.reverse());
-
     this._cdr.markForCheck();
   }
 
+  chooseWhoServesLeftDoubles(side) {
+    if(side === 'odd') {
+      this.db_left_odd_serve_start = true;
+      this.db_left_even_serve_start = false;
+
+      this.db_right_odd_serve_start = true;
+      this.db_right_even_serve_start = false;
+
+
+    } else if(side === 'even') {
+      this.db_left_odd_serve_start = false;
+      this.db_left_even_serve_start = true;
+
+      this.db_right_odd_serve_start = false;
+      this.db_right_even_serve_start = true;
+    }
+    
+  }
+
+  chooseWhoServesRightDoubles(side) {
+
+    if(side === 'odd') {
+      this.db_left_odd_serve_start = true;
+      this.db_left_even_serve_start = false;
+
+      this.db_right_odd_serve_start = true;
+      this.db_right_even_serve_start = false;
+
+
+    } else if(side === 'even') {
+      this.db_left_odd_serve_start = false;
+      this.db_left_even_serve_start = true;
+
+      this.db_right_odd_serve_start = false;
+      this.db_right_even_serve_start = true;
+    }
+    
+  }
 
   clickUndo() {
 
-    const last_score_teamA = this.scores_A[this.scores_A.length - 1];
-    const last_score_teamB = this.scores_B[this.scores_B.length - 1];
 
-    if (last_score_teamA === 0) {
-
-    } 
+    if (this.scoring === 'on') {
+      this.tempLeft.games[this.gamestats.current_set - 1].score_details.pop();
+      this.tempRight.games[this.gamestats.current_set - 1].score_details.pop();
 
 
-    if (last_score_teamB === 0) {
 
+       this.tempLeft.games[this.gamestats.current_set - 1].score =
+       [...this.tempLeft.games[this.gamestats.current_set - 1].score_details].pop();
+
+       this.tempRight.games[this.gamestats.current_set - 1].score =
+       [...this.tempRight.games[this.gamestats.current_set - 1].score_details].pop();
+
+      this.combined_score_Arr.pop();
+
+      this.copyScoreArr = [...this.combined_score_Arr];
+
+      this.copyScoreArr = this.copyScoreArr.reverse();
+      console.table(this.gamestats);
+
+if (this.leftmatchpoint === 'Game' || this.rightmatchpoint === 'Game') {
+  this.leftmatchpoint = '';
+  this.rightmatchpoint = '';
+  this.who_won = '';
+  this.game = 'on';
+  this.done = 'off';
+}
+
+
+      this.scoring = 'off';
     }
 
 
-    this.scores_A.pop();
-    this.scores_B.pop();
+    this._cdr.markForCheck();
 
   }
+
 
 
   doneClick() {
     this.game = 'on';
     this.done = 'off';
+    this.scoring = 'off';
 
-
-
+    this.gameresult = '';
+// debugger;
     if (this.who_won === 'left') {
 
-
-      if ((this.left_game_won + 1) === Math.ceil(parseInt(this.noofsets, 10) / 2)) {
+      if ((this.tempLeft.sets_won + 1) === Math.ceil(this.noofsets / 2)) {
         this.matchresult = `${this.gamestats.teams[0].name} won the Match`;
         this.finish = 'on';
         this.done = 'on';
         this.game = 'off';
         this.scoring = 'off';
+        this.gamestats.winner = this.tempLeft.name;
+
+        this.tempLeft.games[this.gamenumber - 1].result = 'Win';
+        this.tempRight.games[this.gamenumber - 1].result = 'Lose';
+
+        this.tempRight.games[this.gamenumber - 1].set_over = 'Y';
+        this.tempLeft.games[this.gamenumber - 1].set_over = 'Y';
+
+
+        this.tempLeft.sets_won = this.tempLeft.sets_won + 1;
+
       } else {
-        this.left_game_won = this.left_game_won + 1;
-       
-        this.scores_A.splice(1, this.scores_A.length);
-        this.scores_B.splice(1, this.scores_B.length);
+        this.tempLeft.games[this.gamenumber - 1].result = 'Win';
+        this.tempRight.games[this.gamenumber - 1].result = 'Lose';
 
-        
-        this.leftmatchpoint = '';
+        this.tempRight.games[this.gamenumber - 1].set_over = 'Y';
+        this.tempLeft.games[this.gamenumber - 1].set_over = 'Y';
+
         this.gamenumber = this.gamenumber + 1;
+        this.tempLeft.sets_won = this.tempLeft.sets_won + 1;
 
+        this.tempLeft.games
+          .push({'game': this.gamenumber, 'score': 0, 'score_details': [], 'set_over': 'N', 'result': '', 'serve_side': ''});
+        this.tempRight.games
+          .push({'game': this.gamenumber, 'score': 0, 'score_details': [], 'set_over': 'N', 'result': '', 'serve_side': ''});
+
+        this.gamestats.current_set = this.gamestats.current_set + 1;
+
+        this.leftmatchpoint = '';
+
+  //      this.sidechange();
       }
-
-  
-
-
-
     } else if (this.who_won === 'right') {
+      if ((this.tempRight.sets_won + 1) === Math.ceil(this.noofsets / 2)) {
 
-      if ((this.right_game_won + 1) === Math.ceil(parseInt(this.noofsets, 10) / 2)) {
-        this.matchresult = `${this.gamestats.teams[1].name} won the Match`;
+        this.matchresult = `${this.tempRight.name} won the Match`;
         this.finish = 'on';
         this.done = 'on';
         this.game = 'off';
         this.scoring = 'off';
+        this.gamestats.winner = this.tempRight.name;
+        this.tempRight.games[this.gamenumber - 1].result = 'Win';
+        this.tempLeft.games[this.gamenumber - 1].result = 'Lose';
+
+        this.tempRight.games[this.gamenumber - 1].set_over = 'Y';
+        this.tempLeft.games[this.gamenumber - 1].set_over = 'Y';
+
+        this.tempRight.sets_won = this.tempRight.sets_won + 1;
+
       } else {
-        this.right_game_won = this.right_game_won + 1;
-        this.scores_A.splice(1, this.scores_A.length);
-        this.scores_B.splice(1, this.scores_B.length);
-        this.rightmatchpoint = '';
+        this.tempRight.games[this.gamenumber - 1].result = 'Win';
+        this.tempLeft.games[this.gamenumber - 1].result = 'Lose';
+
+        this.tempRight.games[this.gamenumber - 1].set_over = 'Y';
+        this.tempLeft.games[this.gamenumber - 1].set_over = 'Y';
+
         this.gamenumber = this.gamenumber + 1;
+        this.tempRight.sets_won = this.tempRight.sets_won + 1;
+
+        this.tempLeft.games
+          .push({'game': this.gamenumber, 'score': 0, 'score_details': [], 'set_over': 'N', 'result': '', 'serve_side': ''});
+        this.tempRight.games
+          .push({'game': this.gamenumber, 'score': 0, 'score_details': [], 'set_over': 'N', 'result': '', 'serve_side': ''});
+
+
+        this.gamestats.current_set = this.gamestats.current_set + 1;
+
+
+
+        this.rightmatchpoint = '';
+   //     this.sidechange();
       }
+
     }
 
-    if (this.gamenumber === 1) {
-      this.gamestats.teams[0].games[0].score_details = this.scores_A;
-      this.gamestats.teams[1].games[0].score_details = this.scores_B;
-      
-    } else if (this.gamenumber === 2) {
-      this.gamestats.teams[0].games[1].score_details = this.scores_A;
-      this.gamestats.teams[1].games[1].score_details = this.scores_B;
-    } else if (this.gamenumber === 3) {
-      this.gamestats.teams[0].games[2].score_details = this.scores_A;
-      this.gamestats.teams[1].games[2].score_details = this.scores_B;
-    }
 
 
     if (this.finish === 'on') {
       this.openModal();
     }
 
-this._cdr.markForCheck();
+    console.table(this.gamestats);
+    this.copyScoreArr = [];
+    this.combined_score_Arr = [];
+ 
+    if (this.gamestats.current_set === 2) {
+      this.tempLeft = this.gamestats.teams[1];
+      this.tempRight = this.gamestats.teams[0];
+    }
+
+    if (this.gamestats.current_set === 3) {
+      this.tempLeft = this.gamestats.teams[0];
+      this.tempRight = this.gamestats.teams[1];
+    }
+
+
+    this._cdr.markForCheck();
 
   }
 
+
+
+servechange() {
+  if(this.sidea === 'Serve') {
+    this.sidea = 'Receive';
+    this.sideb = 'Serve';
+  } else if (this.sidea === 'Receive') {
+    this.sidea = 'Serve';
+    this.sideb = 'Receive';
+  }
+}
+
+  sidechange() {
+    // this.tempLeft = this.gamestats.teams[0];
+    // this.tempRight = this.gamestats.teams[1];
+// debugger;
+
+if ((this.gamestats.current_set - 1 ) === 2) {
+  this.tempLeft = this.gamestats.teams[1];
+  this.tempRight = this.gamestats.teams[0];
+}
+
+    const val_temp_left = this.tempLeft;
+    const val_temp_right = this.tempRight;
+
+
+    this.tempRight = val_temp_left;
+    this.tempLeft = val_temp_right;
+
+  }
 
   async openModal() {
 
@@ -352,27 +617,61 @@ this._cdr.markForCheck();
     const modal = await this._modalcontroller.create({
       component: MatchOverComponent,
       componentProps: {
-        results: 'hello'
+        results: JSON.stringify(this.gamestats),
+        data: this.gamestats
       }
     });
-    modal.present();
+    return await modal.present();
   }
 
   reset() {
-    this.scores_A.splice(1, this.scores_A.length);
-    this.scores_B.splice(1, this.scores_B.length);
+
+
+
     this.gameresult = '';
     this.leftmatchpoint = '';
     this.rightmatchpoint = '';
-    this.gamenumber = 1;
 
     this.game = 'on';
     this.done = 'off';
     this.scoring = 'off';
 
-    this.left_game_won = 0;
+    this.tempLeft.games[this.gamestats.current_set - 1].score = 0;
+    this.tempRight.games[this.gamestats.current_set - 1].score = 0;
 
-    this.right_game_won = 0;
+    this.tempLeft.games[this.gamestats.current_set - 1].score_details = [];
+    this.tempRight.games[this.gamestats.current_set - 1].score_details = [];
+
+    this.copyScoreArr = [];
+    this.combined_score_Arr = [];
+    this._cdr.markForCheck();
+
+  }
+
+  async presentResetConfirm() {
+   // debugger;
+    const alert = await this.alertController.create({
+      header: 'Confirm!',
+      message: '<strong>Deletes </strong> current game details !!!',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: (blah) => {
+            console.log('Confirm Cancel: blah');
+          }
+        }, {
+          text: 'Okay',
+          handler: () => {
+            console.log('Confirm Okay');
+            this.reset();
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
 
@@ -386,40 +685,3 @@ this._cdr.markForCheck();
 
 
 }
-
-interface IActivity {
-  player1: string;
-  player2: string;
-
-}
-
-
-interface IGameStats {
-  matchid: string;
-  teams: ITeamStats[];
-  
-  format: number;
-  sets: number;
-  current_set: number;
-  winner: string;
-}
-
-interface ITeamStats {
-  name: string;
-  game: number;
-  player1: string;
-  player2: string;
-  initial_side: string;
-  games: Igames[];
-
-}
-
-interface Igames {
-  game: number;
-  score: number;
-  score_details: number[];
-  over: string;
-  result: string;
-  
-}
-

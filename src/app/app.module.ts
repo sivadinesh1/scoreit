@@ -13,7 +13,7 @@ import { MatchOverComponent } from './components/match-over/match-over.component
 
 
 @NgModule({
-  declarations: [AppComponent, MatchOverComponent,],
+  declarations: [AppComponent, MatchOverComponent, ],
   entryComponents: [MatchOverComponent],
   imports: [
     BrowserModule,
@@ -22,7 +22,7 @@ import { MatchOverComponent } from './components/match-over/match-over.component
     AppRoutingModule
   ],
   exports: [
-    
+
   ],
   providers: [
     StatusBar,

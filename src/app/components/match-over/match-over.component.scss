@@ -1,0 +1,123 @@
+.wrapper {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 50px 40px 40px 60px auto;
+
+    .title {
+        text-align: center;
+        justify-content: center;
+        align-self: center;
+        font-size: 2rem;
+        font-weight: 500;
+        text-transform: uppercase;
+    }
+
+    .playersinfo {
+        text-align: center;
+        justify-content: center;
+        align-self: center;
+        font-size: 1.2rem;
+        font-weight: 500;
+        text-transform: uppercase;
+    }
+
+ 
+
+    .restart_match {
+        display: grid;
+        justify-content: center;
+        text-align: center;
+    }
+
+}
+
+.status-heading {
+    width: 90%;
+    background-color: #ffffff;
+    padding: 1rem;
+    justify-self: center;
+    text-align: center;
+}
+
+.set_3 {
+    display: grid;
+    background-color: #ffffff;
+    grid-template-columns: 1fr 1fr 1fr;
+    justify-self: center;
+    text-align: center;
+
+    .set_3_sub{
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+        text-align: center;
+        margin: 1rem;
+
+        .set_head {
+            display: grid;
+            text-align: center;
+        }
+        .set_score {
+            display: grid;
+            text-align: center;
+        }
+
+    }
+    
+    
+}
+.set_2 {
+    display: grid;
+    background-color: #ffffff;
+    grid-template-columns: 1fr 1fr;
+    justify-self: center;
+    text-align: center;
+
+    .set_3_sub{
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+        text-align: center;
+        margin: 1rem;
+
+        .set_head {
+            display: grid;
+            text-align: center;
+        }
+        .set_score {
+            display: grid;
+            text-align: center;
+        }
+
+    }
+    
+    
+}
+
+.set_1 {
+    display: grid;
+    background-color: #ffffff;
+    grid-template-columns: 1fr;
+    justify-self: center;
+    text-align: center;
+
+    .set_3_sub{
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+        text-align: center;
+        margin: 1rem;
+
+        .set_head {
+            display: grid;
+            text-align: center;
+        }
+        .set_score {
+            display: grid;
+            text-align: center;
+        }
+
+    }
+    
+    
+}

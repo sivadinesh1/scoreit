@@ -1,3 +1,77 @@
-<p>
-  match-over works!
-</p>
+<div class="wrapper">
+  <div class="title">
+    MATCH COMPLETE
+  </div>
+  <div class="playersinfo">
+
+    {{gamedata.teams[0].name}} vs {{gamedata.teams[1].name}}
+
+  </div>
+
+  <div class="status-heading">Game Stats</div>
+  <div *ngIf="setsplayed === 3" class="set_3">
+
+    <div class="set_3_sub">
+      <div class="set_head">
+        GAME 1
+      </div>
+      <div class="set_score">
+        {{gamedata.teams[0].games[0].score}} - {{gamedata.teams[1].games[0].score}}
+      </div>
+    </div>
+    <div class="set_3_sub">
+      <div class="set_head">
+        GAME 2
+      </div>
+      <div class="set_score">
+        {{gamedata.teams[0].games[1].score}} - {{gamedata.teams[1].games[1].score}}
+      </div>
+    </div>
+    <div class="set_3_sub">
+      <div class="set_head">
+        GAME 3
+      </div>
+      <div class="set_score">
+        {{gamedata.teams[0].games[2].score}} - {{gamedata.teams[1].games[2].score}}
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="setsplayed === 2" class="set_2">
+
+    <div class="set_3_sub">
+      <div class="set_head">
+        GAME 1
+      </div>
+      <div class="set_score">
+        {{gamedata.teams[0].games[0].score}} - {{gamedata.teams[1].games[0].score}}
+      </div>
+    </div>
+    <div class="set_3_sub">
+      <div class="set_head">
+        GAME 2
+      </div>
+      <div class="set_score">
+        {{gamedata.teams[0].games[1].score}} - {{gamedata.teams[1].games[1].score}}
+      </div>
+    </div>
+
+  </div>
+
+  <div *ngIf="setsplayed === 1" class="set_1">
+
+    <div class="set_3_sub">
+      <div class="set_head">
+        GAME 1
+      </div>
+      <div class="set_score">
+        {{gamedata.teams[0].games[0].score}} - {{gamedata.teams[1].games[0].score}}
+      </div>
+    </div>
+  </div>
+
+
+  <div class="restart_match">
+    <ion-button color="primary" (click)="goHome()">Reset Match</ion-button>
+  </div>
+</div>
